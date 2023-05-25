@@ -101,19 +101,32 @@ gsea_results_cca_xdx = inner_join(gsea_results_cca, gsea_results_xdx,
                                 padj_cca > 0.05 & padj_xdx <= 0.05 ~ "Pleiotropic",
                                 .default = "Neither"))
 
-ggplot(gsea_results_cca_xdx, aes(x = NES_xdx, y = NES_cca, color = Enriched)) + 
-    geom_point(pch = 21) + 
-    theme_classic() +
-    geom_hline(yintercept = 0) +
-    geom_vline(xintercept = 0) +
-    geom_abline(slope = 1, lty = 2, color = "black") + 
-    facet_grid(Resource ~ study, scales = "free", space = "free") + 
-    scale_color_manual(values = c("green", "gray", "blue", "red")) +     
-    xlab("Normalized Enrichment Score Cross Disorder") +
-    ylab("Normalized Enrichment Score Case vs Other Cases") +     
-    geom_label_repel(aes(label = ifelse(Enriched == "Specific", pathway, "")),
-                    size = 3,
-                    max.overlaps = Inf)
+for (resource in unique(gsea_results_cca_xdx$Resource)) {
+    png(paste0("Case_Case_vs_xDx_", resource, ".png"), 
+        res = 300, 
+        width = 15, 
+        height = 12,
+        units = "in")
+    print(ggplot(gsea_results_cca_xdx %>% filter(Resource == resource),
+           aes(x = NES_xdx, y = NES_cca, color = Enriched)) + 
+        geom_point(pch = 21) + 
+        theme_classic() + 
+        geom_hline(yintercept = 0) +
+        geom_vline(xintercept = 0) +
+        geom_abline(slope = 1, lty = 2, color = "black") + 
+        facet_wrap(. ~ study) + 
+        scale_color_manual(values = c("green", "gray", "blue", "red")) +     
+        xlab("Normalized Enrichment Score Cross Disorder") +
+        ylab("Normalized Enrichment Score Case vs Other Cases") + 
+        geom_label_repel(aes(label = ifelse(Enriched == "Specific", pathway, "")),
+                         size = 3,
+                         force = 5,
+                         nudge_y = -1,
+                         force_pull = 0,
+                         max.overlaps = Inf,
+                         max.iter = 100000))
+    dev.off()
+}
 
 # Case-Case vs Case-Control
 
@@ -123,17 +136,28 @@ gsea_results_cca_cco = inner_join(gsea_results_cca, gsea_results_cco,
                                 padj_cca <= 0.05 & padj_cco > 0.05 ~ "vs Cohort",
                                 padj_cca > 0.05 & padj_cco <= 0.05 ~ "vs Other Cases",
                                 .default = "Neither"))
-
-ggplot(gsea_results_cca_cco, aes(x = NES_cco, y = NES_cca, color = Enriched)) + 
-    geom_point(pch = 21) + 
-    theme_classic() +
-    geom_hline(yintercept = 0) +
-    geom_vline(xintercept = 0) +
-    geom_abline(slope = 1, lty = 2, color = "black") + 
-    facet_wrap(study ~ .) + 
-    scale_color_manual(values = c("green", "gray", "blue", "red")) +
-    xlab("Normalized Enrichment Score Case vs Cohort") +
-    ylab("Normalized Enrichment Score Case vs Other Cases") +
-    geom_text_repel(aes(label = ifelse(Enriched == "vs Other Cases", pathway, "")), 
-                    size = 3,
-                    max.overlaps = Inf)
+for (resource in unique(gsea_results_cca_cco$Resource)) {
+    png(paste0("Case_Case_vs_Case_Control_", resource, ".png"), 
+        res = 300, 
+        width = 15, 
+        height = 12,
+        units = "in")
+    print(ggplot(gsea_results_cca_cco, aes(x = NES_cco, y = NES_cca, color = Enriched)) + 
+        geom_point(pch = 21) +
+        theme_classic() +
+        geom_hline(yintercept = 0) +
+        geom_vline(xintercept = 0) +
+        geom_abline(slope = 1, lty = 2, color = "black") + 
+        facet_wrap(study ~ .) + 
+        scale_color_manual(values = c("green", "gray", "blue", "red")) +
+        xlab("Normalized Enrichment Score Case vs Cohort") +
+        ylab("Normalized Enrichment Score Case vs Other Cases") +
+        geom_label_repel(aes(label = ifelse(Enriched == "vs Other Cases", pathway, "")),
+                         size = 3,
+                         force = 5,
+                         nudge_y = -1,
+                         force_pull = 0,
+                         max.overlaps = Inf,
+                         max.iter = 100000))
+    dev.off()
+}
