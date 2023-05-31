@@ -7,57 +7,73 @@ suppressPackageStartupMessages({
     library(stringr)
     library(janitor)
     library(reshape2)
+    library(broom)
 })
 
-metadata = fread("/Users/vapp0002/Downloads/GSE25219/metadata_GSE25219.tsv",
-                 header = T) %>% 
-    clean_names() %>% select(refinebio_accession_code, 
-                             contains("characteristics"),
-                             -characteristics_ch1_ph,
-                             -characteristics_ch1_postmortem_interval,
-                             -characteristics_ch1_rna_integrity_number)
+setwd("/Users/vapp0002/Documents/xDx_2/Magma/")
 
-gse25219 = fread("/Users/vapp0002/Downloads/GSE25219/GSE25219.tsv", 
+magma = fread("/Users/vapp0002/Documents/xDx_2/Magma/C_Magma.txt", header = T)
+enriched_genes = magma %>% 
+    filter(P_ADJ < 0.05) %>% 
+    group_by(TEST) %>%
+    mutate(N_GENES = n()) %>%
+    ungroup() %>% 
+    filter(N_GENES >= 20) %>% 
+    select(-N_GENES)
+
+metadata = fread("/Users/vapp0002/Documents/xDx_2/GSE25219/metadata_GSE25219.tsv",
+                 header = T) %>% 
+    clean_names() %>% 
+    select(refinebio_accession_code, 
+           characteristics_ch1_stage, 
+           characteristics_ch1_age) %>%
+    rename(SAMPLE = refinebio_accession_code,
+           STAGE = characteristics_ch1_stage,
+           AGE = characteristics_ch1_age)
+
+# metadata$STAGE = factor(metadata$STAGE)
+
+gse25219 = fread("/Users/vapp0002/Documents/xDx_2/GSE25219/GSE25219.tsv", 
                  header = T,
                  sep = "\t")
 
-magma = fread("/Users/vapp0002/Documents/xDx_2/Magma/C_Magma.txt", header = T)
-
-ggplot(metadata, aes(x = as.factor(characteristics_ch1_stage))) + 
-    geom_bar() + 
-    theme_classic() + 
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-    xlab("")
-
-age_stage_df = metadata %>% 
-    select(characteristics_ch1_age, characteristics_ch1_stage) %>% 
-    table() %>%
-    as.data.frame() %>% 
-    filter(Freq > 0)
-
-age_order = metadata %>% 
-    select(characteristics_ch1_age, characteristics_ch1_stage) %>%
-    unique() %>% 
-    arrange(characteristics_ch1_stage, characteristics_ch1_age) %>% 
-    select(characteristics_ch1_age)
-
-ggplot(age_stage_df, aes(y = factor(characteristics_ch1_stage), 
-                         x = characteristics_ch1_age, 
-                         fill = Freq)) + 
-    geom_tile(color = "black") + 
-    theme_bw() + 
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white") +
-    geom_text(aes(label = ifelse(Freq > 0, Freq, ""))) + 
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-    scale_x_discrete(limits = age_order$characteristics_ch1_age) +
-    xlab("Age") + 
-    ylab("Stage")
-
 gse25219 = gse25219 %>% 
     melt(id.vars = c("Gene")) %>% 
-    rename(refinebio_accession_code = variable) %>%
-    rename(normalized_expression = value)
+    rename(SAMPLE = variable) %>%
+    rename(GENE = Gene) %>%
+    rename(normalized_expression = value) %>% 
+    group_by(SAMPLE) %>%
+    mutate(normalized_expression_scaled = scale(normalized_expression, 
+                                                center = T, 
+                                                scale = F)) %>%
+    ungroup()
 
-gse25219 = inner_join(gse25219, metadata, by = c("refinebio_accession_code"))
+gse25219_genes_of_interest = inner_join(gse25219, 
+                                        enriched_genes, 
+                                        by = c("GENE"), 
+                                        relationship = "many-to-many") %>% 
+    group_by(TEST, SAMPLE) %>% 
+    summarise(MeanExpression = mean(normalized_expression_scaled), 
+              .groups = "drop")
 
-head(gse25219)
+gse25219_genes_of_interest = inner_join(gse25219_genes_of_interest, metadata, 
+                                        by = c("SAMPLE"),
+                                        relationship = "many-to-many")
+
+png("Developmental_Trajectories.png", 
+    width = 10, 
+    height = 8, 
+    units = "in", 
+    res = 300)
+
+ggplot(gse25219_genes_of_interest, aes(x = STAGE, y = MeanExpression, color = TEST)) + 
+    geom_smooth(method = "loess") +
+    theme_classic() +
+    scale_x_continuous(breaks = seq(1, 20, by = 1)) +
+    scale_y_continuous(breaks = seq(-5, 5, by = c(0.1))) +
+    scale_color_manual(values = c("red", "blue", "green", "black", "yellow", 
+                                  "orange", "cyan", "brown", "violet")) + 
+    ylab("Normalized Expression") +
+    theme(legend.title = element_blank())
+
+dev.off()
