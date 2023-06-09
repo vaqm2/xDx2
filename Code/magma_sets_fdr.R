@@ -12,7 +12,7 @@ gene_sets = data.frame(SET = character(),
 
 for (file in files) {
     print(paste("Processing", file, "....", sep = " "))
-    association = read.table(file, header = T)
+    association = read.table(file, skip = 3, header = T)
     test = gsub("^iPSYCH2015_EUR_", "", file)
     test = gsub("\\..*", "", test)
     association = association %>% 
