@@ -20,7 +20,7 @@ for (file in files) {
         mutate(TEST = test) %>% 
         mutate(Z = BETA_STD/SE) %>%
         select(-TYPE, -BETA, -NGENES, -BETA_STD, -SE)
-    if(FULL_NAME %in% colnames(association)) {
+    if("FULL_NAME" %in% colnames(association)) {
         association = association %>% 
             rename(SET = FULL_NAME) %>% 
             select(-VARIABLE)
