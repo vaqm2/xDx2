@@ -31,6 +31,6 @@ for (file in files) {
     gene_sets = rbind(gene_sets, association)
 }
 
-gene_sets %>% mutate(P_ADJ = p.adjust(P, method = c("fdr")))
+gene_sets = gene_sets %>% mutate(P_ADJ = p.adjust(P, method = c("fdr")))
 
 write.table(gene_sets, "GeneSetsFDR.txt", row.names = F, sep = "\t", quote = F)
