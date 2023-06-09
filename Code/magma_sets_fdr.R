@@ -19,8 +19,15 @@ for (file in files) {
         filter(NGENES >= 10 & NGENES <= 500) %>%
         mutate(TEST = test) %>% 
         mutate(Z = BETA_STD/SE) %>%
-        select(-VARIABLE, -TYPE, -BETA, -NGENES, -BETA_STD, -SE) %>%
-        rename(SET = FULL_NAME)
+        select(-TYPE, -BETA, -NGENES, -BETA_STD, -SE)
+    if(FULL_NAME in colnames(association)) {
+        association = association %>% 
+            rename(SET = FULL_NAME) %>% 
+            select(-VARIABLE)
+    } else {
+        association = association %>% 
+            rename(SET = VARIABLE)
+    }
     gene_sets = rbind(gene_sets, association)
 }
 
