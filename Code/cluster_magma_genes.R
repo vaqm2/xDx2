@@ -183,7 +183,7 @@ ggplot(mean_z, aes(y = factor(GROUP), x = TEST, fill = MEAN_Z)) +
 
 dev.off()
 
-png(paste0("Num_genes_by_cluster_group", "_", num_clusters, ".png"),
+png(paste0("Num_genes_by_cluster_group", "_", n_clusters, ".png"),
     res = 300,
     units = "in",
     width = 10,
