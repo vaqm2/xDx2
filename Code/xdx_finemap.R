@@ -100,14 +100,19 @@ twas_genes %>%
 
 dev.off()
 
+png("iso_twas_n_genes.png", res = 300, width = 10, height = 10, units = "in")
+
 iso_twas_genes %>% 
-    ggplot(aes(x = Gene, y = paste0(Trait, Type), fill = z)) +
-    geom_tile(color = "black") + 
+    count(Trait, Method, Type) %>%
+    ggplot(aes(x = paste0(Trait, Type), y = n, fill = Method)) + 
+    geom_bar(stat = "identity", position = position_dodge(width = 0.95)) + 
     theme_bw() +
-    facet_grid(Method ~ ., scales = "free_y", space = "free") +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
-          axis.text.y = element_text(face = "bold"),
+    theme(legend.title = element_blank(), 
           legend.position = "bottom",
-          strip.background = element_rect(fill = "white")) +
-    xlab("") + ylab("") +
-    scale_fill_gradient2(low = "blue", mid = "white", high = "red")
+          axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+          axis.text.y = element_text(face = "bold")) +
+    scale_fill_manual(values = c("blue", "red")) +
+    xlab("") + ylab("Number of genes") +
+    facet_grid(. ~ Type, scales = "free", space = "free")
+
+dev.off()
