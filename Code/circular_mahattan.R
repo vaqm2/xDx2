@@ -30,7 +30,7 @@ png(paste0(args[2], "_0.05_Manhattan.png"),
     height = 15,
     units = "in")
 
-CMplot(assoc, 
+CMplot(assoc_0.05, 
        type = "p",
        plot.type = "c",
        col = c("grey60", "grey30"),
