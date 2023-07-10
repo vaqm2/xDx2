@@ -56,7 +56,7 @@ CMplot(assoc,
 
 dev.off()
 
-png(paste0(args[2], "_0.05_Manhattan.png"), 
+png(paste0(args[2], "_Manhattan.png"), 
     res = 300,
     width = 15,
     height = 15,
@@ -85,7 +85,7 @@ CMplot(assoc,
 
 dev.off()
 
-png(paste0(args[2], "_0.05_QQ.png"), 
+png(paste0(args[2], "_QQ.png"), 
     res = 300,
     width = 10,
     height = 10,
