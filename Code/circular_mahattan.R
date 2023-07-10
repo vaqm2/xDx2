@@ -4,6 +4,7 @@ library(dplyr)
 library(CMplot)
 library(vroom)
 library(tidyr)
+library(purrr)
 
 args = commandArgs(trailingOnly = TRUE)
 files = vroom(args[1])
