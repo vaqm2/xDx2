@@ -7,7 +7,9 @@ library(purrr)
 
 args = commandArgs(trailingOnly = TRUE)
 files = vroom(args[1])
-list_of_assoc = map(files, function(file = path, new_col = trait) {
+list_of_assoc = map2(files %>% pull(Path), 
+                     files %>% pull(Trait),
+                     function(path, trait) {
     this_assoc = vroom(path) %>% 
         select(SNP, CHR, BP, P) %>%
         mutate(Trait = trait)
