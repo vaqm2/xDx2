@@ -3,7 +3,7 @@
 library(dplyr)
 library(CMplot)
 library(vroom)
-library(pivot)
+library(tidyr)
 
 args = commandArgs(trailingOnly = TRUE)
 files = vroom(args[1])
