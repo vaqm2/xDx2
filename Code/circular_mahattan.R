@@ -1,9 +1,7 @@
 #!/usr/bin/env Rscript
 
-library(dplyr)
+library(tidyverse)
 library(CMplot)
-library(vroom)
-library(purrr)
 
 args = commandArgs(trailingOnly = TRUE)
 files = vroom(args[1])
