@@ -24,13 +24,8 @@ assoc_0.05 = bind_rows(list_of_assoc) %>%
 assoc = bind_rows(list_of_assoc) %>%
     pivot_wider(names_from = Trait, values_from = P)
 
-png(paste0(args[2], "_0.05_Manhattan.png"), 
-    res = 300,
-    width = 15,
-    height = 15,
-    units = "in")
-
 CMplot(assoc_0.05, 
+       H = 2,
        type = "p",
        plot.type = "c",
        col = c("grey60", "grey30"),
@@ -49,20 +44,15 @@ CMplot(assoc_0.05,
        trait.legend.pos = "right",
        ylab=expression(-log[10](italic(p))),
        dpi = 300,
-       file.output = FALSE,
+       file.output = TRUE,
        conf.int = TRUE,
        width = 15,
-       height = 15)
-
-dev.off()
-
-png(paste0(args[2], "_Manhattan.png"), 
-    res = 300,
-    width = 15,
-    height = 15,
-    units = "in")
+       height = 15,
+       file = "tiff",
+       file.name = paste0(args[2], "_0.05_Manhattan"))
 
 CMplot(assoc, 
+       H = 2,
        type = "p",
        plot.type = "m",
        col = c("grey60", "grey30"),
@@ -78,18 +68,12 @@ CMplot(assoc,
        trait.legend.pos = "right",
        ylab=expression(-log[10](italic(p))),
        dpi = 300,
-       file.output = FALSE,
+       file.output = TRUE,
        conf.int = TRUE,
        width = 15,
-       height = 15)
-
-dev.off()
-
-png(paste0(args[2], "_QQ.png"), 
-    res = 300,
-    width = 10,
-    height = 10,
-    units = "in")
+       height = 15,
+       file = "tiff",
+       file.name = paste0(aargs[2], "_Manhattan"))
 
 CMplot(assoc, 
        type = "p",
@@ -105,9 +89,9 @@ CMplot(assoc,
        ylab=expression(-log[10](italic(p))),
        multracks = TRUE,
        dpi = 300,
-       file.output = FALSE,
+       file.output = TRUE,
        conf.int = TRUE,
        width = 8,
-       height = 8)
-
-dev.off()
+       height = 8,
+       file = "tiff",
+       file.name = paste0(args[2], "_qq"))
