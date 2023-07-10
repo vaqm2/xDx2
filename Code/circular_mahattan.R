@@ -16,7 +16,8 @@ list_of_assoc = map2(files %>% pull(Path),
     return(this_assoc)
 })
 
-assoc = bind_rows(list_of_assoc)
+assoc = bind_rows(list_of_assoc) %>%
+    pivot_wider(names_from = Trait, values_from = P)
 
 CMplot(assoc, 
        type = "p",
@@ -25,7 +26,7 @@ CMplot(assoc,
        outward = TRUE,
        threshold = 5e-8,
        file = "tiff", 
-       file.name = paste0(args[2], ".tiff"),
+       file.name = args[2],
        dpi = 300,
        file.output = TRUE,
        verbose = TRUE,
