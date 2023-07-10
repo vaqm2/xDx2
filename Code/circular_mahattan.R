@@ -7,11 +7,11 @@ library(tidyr)
 library(purrr)
 
 args = commandArgs(trailingOnly = TRUE)
-files = vroom(args[1])
+files = vroom(args[1], show_col_types = FALSE)
 list_of_assoc = map2(files %>% pull(Path), 
                      files %>% pull(Trait),
                      function(path, trait) {
-    this_assoc = vroom(path) %>% 
+    this_assoc = vroom(path, show_col_types = FALSE) %>% 
         select(SNP, CHR, BP, P) %>%
         mutate(Trait = trait)
     return(this_assoc)
