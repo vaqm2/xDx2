@@ -62,11 +62,11 @@ for (file in files) {
     association = association %>% 
         mutate(TEST = test) %>% 
         mutate(P_FDR = p.adjust(P, method = "fdr")) %>%
-#        filter(P_FDR <= 0.05) %>%
-        arrange(P_FDR) %>%
-        head(10) %>%
+        filter(P_FDR <= 0.05) %>%
         select(GENE, TEST)
-    genes = rbind(genes, association)
+    if(nrow(association) >= 100) {
+        genes = rbind(genes, association)
+    }
 }
 
 enriched_genes = genes %>% 
@@ -85,7 +85,7 @@ mean_expr_by_test = expr_data_magma %>%
                          "Case vs. Other Cases", 
                          "Case vs. Cohort"))
 
-png("Pre_vs_Postnatal_Expression.png",
+png("Pre_vs_Postnatal_Expression_min_100.png",
     res = 300,
     width = 15,
     height = 10,
@@ -108,7 +108,7 @@ dev.off()
 mean_expr_by_test = inner_join(mean_expr_by_test, datMeta, by = "ID")
 mean_expr_by_test$TEST = gsub("_CC", "", mean_expr_by_test$TEST)
 
-png("Prental_Expression_Trajectories_CCa_CCo.png",
+png("Prental_Expression_Trajectories_CCa_CCo_min_100.png",
     res = 300,
     width = 15,
     height = 10,
@@ -134,7 +134,7 @@ ggplot(mean_expr_by_test %>% na.omit() %>% filter(Period == "Prenatal"),
 
 dev.off()
 
-png("Postnatal_Expression_Trajectories_CCa_CCo.png",
+png("Postnatal_Expression_Trajectories_CCa_CCo_min_100.png",
     res = 300,
     width = 15,
     height = 10,
@@ -161,7 +161,7 @@ ggplot(mean_expr_by_test %>% na.omit() %>% filter(Period == "Postnatal"),
 
 dev.off()
 
-png("Pre_vsPostnatal_Expression_Trajectories_CCa_CCo.png",
+png("Pre_vsPostnatal_Expression_Trajectories_CCa_CCo_min_100.png",
     res = 300,
     width = 15,
     height = 10,
@@ -175,7 +175,7 @@ ggplot(mean_expr_by_test %>% na.omit(),
     theme(legend.title = element_blank(),
           legend.position = "bottom") + 
     geom_hline(yintercept = 0, lty = 2) +
-    facet_wrap(Region ~ .) +
+    facet_grid(Region ~ TEST) +
     scale_color_manual(values = c("red",
                                   "blue",
                                   "green",

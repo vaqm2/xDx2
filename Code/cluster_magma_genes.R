@@ -189,7 +189,7 @@ png(paste0("Num_genes_by_cluster_group", "_", n_clusters, ".png"),
     width = 10,
     height = 10)
 
-ggplot(mean_z, aes(x = factor(GROUP), fill = factor(GROUP))) + 
+ggplot(mean_z %>% filter(TEST == "xDx"), aes(x = factor(GROUP))) + 
     geom_bar() + 
     theme_classic() +
     guides(fill = "none") +
